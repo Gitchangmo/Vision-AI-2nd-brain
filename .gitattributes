@@ -1,0 +1,18 @@
+* text eol=lf
+
+*.py text eol=lf working-tree-encoding=UTF-8
+*.pyi text eol=lf working-tree-encoding=UTF-8
+*.toml text eol=lf working-tree-encoding=UTF-8
+*.yaml text eol=lf working-tree-encoding=UTF-8
+*.yml text eol=lf working-tree-encoding=UTF-8
+*.md text eol=lf working-tree-encoding=UTF-8
+*.json text eol=lf working-tree-encoding=UTF-8
+*.txt text eol=lf working-tree-encoding=UTF-8
+
+*.pdf -text -diff -merge
+*.png -text -diff -merge
+*.jpg -text -diff -merge
+*.jpeg -text -diff -merge
+*.gif -text -diff -merge
+*.webp -text -diff -merge
+*.zip -text -diff -merge

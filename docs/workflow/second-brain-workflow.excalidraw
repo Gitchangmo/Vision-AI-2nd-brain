@@ -1,0 +1,1300 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "mcp-excalidraw-server",
+  "elements": [
+    {
+      "id": "wf-title",
+      "type": "text",
+      "x": 60,
+      "y": 40,
+      "width": 1700,
+      "height": 44,
+      "strokeColor": "#1e1e1e",
+      "text": "2nd-Brain 운영 워크플로우 · Evidence to Reusable Knowledge",
+      "fontSize": 34,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:07:34.677Z",
+      "version": 1
+    },
+    {
+      "id": "wf-subtitle",
+      "type": "text",
+      "x": 60,
+      "y": 92,
+      "width": 2050,
+      "height": 30,
+      "strokeColor": "#495057",
+      "text": "Hermes가 수집·컴파일·그래프를 예약하고, Gate A/B/C와 사람 검토가 장기 지식 승격을 통제한다",
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:08.397Z",
+      "version": 2,
+      "originalText": "Hermes가 수집·컴파일·그래프를 예약하고, Gate A/B/C와 사람 검토가 장기 지식 승격을 통제한다"
+    },
+    {
+      "id": "wf-legend",
+      "type": "text",
+      "x": 60,
+      "y": 132,
+      "width": 1800,
+      "height": 26,
+      "strokeColor": "#868e96",
+      "text": "실선 = 통과 흐름   ·   점선 = 가설/논쟁   ·   청록 = Hermes Cron   ·   초록 = 승인   ·   빨강 = 중단",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:08.931Z",
+      "version": 2,
+      "originalText": "실선 = 통과 흐름   ·   점선 = 가설/논쟁   ·   청록 = Hermes Cron   ·   초록 = 승인   ·   빨강 = 중단"
+    },
+    {
+      "id": "wf-zone-capture",
+      "type": "rectangle",
+      "x": 40,
+      "y": 390,
+      "width": 510,
+      "height": 740,
+      "backgroundColor": "#ffd8a8",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 24,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.789Z",
+      "version": 2
+    },
+    {
+      "id": "wf-zone-compile",
+      "type": "rectangle",
+      "x": 580,
+      "y": 390,
+      "width": 510,
+      "height": 740,
+      "backgroundColor": "#a5d8ff",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 24,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.797Z",
+      "version": 2
+    },
+    {
+      "id": "wf-zone-discover",
+      "type": "rectangle",
+      "x": 1120,
+      "y": 390,
+      "width": 510,
+      "height": 740,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 24,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.798Z",
+      "version": 2
+    },
+    {
+      "id": "wf-zone-decide",
+      "type": "rectangle",
+      "x": 1660,
+      "y": 390,
+      "width": 690,
+      "height": 740,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 24,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.800Z",
+      "version": 2
+    },
+    {
+      "id": "wf-capture-label",
+      "type": "text",
+      "x": 70,
+      "y": 415,
+      "width": 430,
+      "height": 34,
+      "strokeColor": "#e8590c",
+      "text": "1. Capture · 원본 보존",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.803Z",
+      "version": 2
+    },
+    {
+      "id": "wf-compile-label",
+      "type": "text",
+      "x": 610,
+      "y": 415,
+      "width": 430,
+      "height": 34,
+      "strokeColor": "#1971c2",
+      "text": "2. Compile · 정본 지식화",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.805Z",
+      "version": 2
+    },
+    {
+      "id": "wf-discover-label",
+      "type": "text",
+      "x": 1150,
+      "y": 415,
+      "width": 430,
+      "height": 34,
+      "strokeColor": "#9c36b5",
+      "text": "3. Discovery · 가설 탐색",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.807Z",
+      "version": 2
+    },
+    {
+      "id": "wf-decide-label",
+      "type": "text",
+      "x": 1690,
+      "y": 415,
+      "width": 520,
+      "height": 34,
+      "strokeColor": "#2f9e44",
+      "text": "4. Human Decision · 검증/판정",
+      "fontSize": 24,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.810Z",
+      "version": 2
+    },
+    {
+      "id": "capture-main",
+      "type": "rectangle",
+      "x": 90,
+      "y": 490,
+      "width": 410,
+      "height": 120,
+      "backgroundColor": "#ffd8a8",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Hermes Agent 자동 수집\nweb · browser · Zotero MCP\ninbox 후보 → raw record"
+      },
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:09.465Z",
+      "version": 3
+    },
+    {
+      "id": "capture-steps",
+      "type": "text",
+      "x": 95,
+      "y": 665,
+      "width": 400,
+      "height": 255,
+      "strokeColor": "#9a3412",
+      "text": "① source allowlist · 검색 범위 확인\n\n② URL · 식별자 · SHA-256 중복 검사\n\n③ metadata · 수집 시점 · 재현 경로 확보\n\n④ 분류 완료만 raw/에 고정",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:11.067Z",
+      "version": 3,
+      "originalText": "① source allowlist · 검색 범위 확인\n\n② URL · 식별자 · SHA-256 중복 검사\n\n③ metadata · 수집 시점 · 재현 경로 확보\n\n④ 분류 완료만 raw/에 고정"
+    },
+    {
+      "id": "capture-gate",
+      "type": "rectangle",
+      "x": 90,
+      "y": 1000,
+      "width": 410,
+      "height": 70,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Gate A · raw 무결성 통과\n실패 시 쓰기 중단 → 원본/metadata 수리"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.820Z",
+      "version": 2
+    },
+    {
+      "id": "compile-main",
+      "type": "rectangle",
+      "x": 630,
+      "y": 490,
+      "width": 410,
+      "height": 120,
+      "backgroundColor": "#a5d8ff",
+      "strokeColor": "#1971c2",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Hermes Cron: compile-wiki\nllm-wiki로 canonical 변경안 생성\n전용 branch · index · log"
+      },
+      "fontSize": 19,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:09.993Z",
+      "version": 3
+    },
+    {
+      "id": "compile-steps",
+      "type": "text",
+      "x": 635,
+      "y": 665,
+      "width": 400,
+      "height": 255,
+      "strokeColor": "#0c4a6e",
+      "text": "① workdir에서 SCHEMA · index · log 확인\n\n② llm-wiki로 page 후보 생성·갱신\n\n③ source · wikilink · confidence 기록\n\n④ page · index · log 동기화 + lint",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:11.613Z",
+      "version": 3,
+      "originalText": "① workdir에서 SCHEMA · index · log 확인\n\n② llm-wiki로 page 후보 생성·갱신\n\n③ source · wikilink · confidence 기록\n\n④ page · index · log 동기화 + lint"
+    },
+    {
+      "id": "compile-gate",
+      "type": "rectangle",
+      "x": 630,
+      "y": 1000,
+      "width": 410,
+      "height": 70,
+      "backgroundColor": "#99e9f2",
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Gate B · frontmatter-aware lint 통과\nschema · source · link · count 검증"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.826Z",
+      "version": 2
+    },
+    {
+      "id": "discover-main",
+      "type": "rectangle",
+      "x": 1170,
+      "y": 490,
+      "width": 410,
+      "height": 120,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Hermes Cron: build-knowledge-graph\nlint 통과 revision에서 UA 실행\n결과는 hypothesis candidate"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:10.532Z",
+      "version": 3
+    },
+    {
+      "id": "discover-notebook",
+      "type": "rectangle",
+      "x": 1150,
+      "y": 680,
+      "width": 220,
+      "height": 135,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "label": {
+        "text": "NotebookLM\n인용 기반 집중 질의\nsource ID 확보"
+      },
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.830Z",
+      "version": 2
+    },
+    {
+      "id": "discover-ua",
+      "type": "rectangle",
+      "x": 1390,
+      "y": 680,
+      "width": 220,
+      "height": 135,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "label": {
+        "text": "understand-knowledge\n그래프 · 군집 · 브리지\n공백 후보"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.831Z",
+      "version": 2
+    },
+    {
+      "id": "discover-hypothesis",
+      "type": "rectangle",
+      "x": 1170,
+      "y": 890,
+      "width": 410,
+      "height": 120,
+      "backgroundColor": "#e9ecef",
+      "strokeColor": "#868e96",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "label": {
+        "text": "Gate C · 구조/인용/freshness 검증\n가설 후보를 raw · canonical과 대조"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.677Z",
+      "updatedAt": "2026-07-21T08:08:07.832Z",
+      "version": 2
+    },
+    {
+      "id": "human-gate-wf",
+      "type": "rectangle",
+      "x": 1710,
+      "y": 490,
+      "width": 590,
+      "height": 150,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 3,
+      "roughness": 0,
+      "label": {
+        "text": "Human Review Gate\n원문 일치 · 중복 · 모순 · 신뢰도\nAI 합성 / 외부 주장 / 개인 판단 분리"
+      },
+      "fontSize": 20,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.833Z",
+      "version": 2
+    },
+    {
+      "id": "human-checks",
+      "type": "text",
+      "x": 1720,
+      "y": 680,
+      "width": 570,
+      "height": 135,
+      "strokeColor": "#166534",
+      "text": "승격 질문\n• 반복해서 재사용할 가치가 있는가?\n• source 경로와 claim이 원문에 일치하는가?\n• 기존 문서와 중복되거나 충돌하지 않는가?",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.834Z",
+      "version": 2
+    },
+    {
+      "id": "status-label",
+      "type": "text",
+      "x": 1715,
+      "y": 860,
+      "width": 240,
+      "height": 28,
+      "strokeColor": "#2f9e44",
+      "text": "판정 상태",
+      "fontSize": 20,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.835Z",
+      "version": 2
+    },
+    {
+      "id": "status-accepted",
+      "type": "rectangle",
+      "x": 1690,
+      "y": 910,
+      "width": 150,
+      "height": 90,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Accepted\ncanonical 반영"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.836Z",
+      "version": 2
+    },
+    {
+      "id": "status-contested",
+      "type": "rectangle",
+      "x": 1850,
+      "y": 910,
+      "width": 150,
+      "height": 90,
+      "backgroundColor": "#ffd8a8",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "label": {
+        "text": "Contested\n양쪽 주장 기록"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.837Z",
+      "version": 2
+    },
+    {
+      "id": "status-deferred",
+      "type": "rectangle",
+      "x": 2010,
+      "y": 910,
+      "width": 150,
+      "height": 90,
+      "backgroundColor": "#e9ecef",
+      "strokeColor": "#868e96",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "label": {
+        "text": "Deferred\n근거 보강 대기"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.838Z",
+      "version": 2
+    },
+    {
+      "id": "status-rejected",
+      "type": "rectangle",
+      "x": 2170,
+      "y": 910,
+      "width": 150,
+      "height": 90,
+      "backgroundColor": "#ffc9c9",
+      "strokeColor": "#e03131",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Rejected\n정본 미편입"
+      },
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.839Z",
+      "version": 2
+    },
+    {
+      "id": "decision-note",
+      "type": "text",
+      "x": 1715,
+      "y": 1045,
+      "width": 590,
+      "height": 48,
+      "strokeColor": "#495057",
+      "text": "Accepted/Contested만 근거와 함께 쓰기 단계로 진행\nDeferred/Rejected는 canonical 자동 편입 금지",
+      "fontSize": 16,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.840Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-zone",
+      "type": "rectangle",
+      "x": 40,
+      "y": 1170,
+      "width": 2310,
+      "height": 360,
+      "backgroundColor": "#e9ecef",
+      "strokeColor": "#868e96",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 25,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.841Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-label",
+      "type": "text",
+      "x": 70,
+      "y": 1195,
+      "width": 1500,
+      "height": 34,
+      "strokeColor": "#2f9e44",
+      "text": "Feedback Loop · Accepted revision만 canonical 반영 후 lint와 UA 재생성",
+      "fontSize": 25,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:12.682Z",
+      "version": 3,
+      "originalText": "Feedback Loop · Accepted revision만 canonical 반영 후 lint와 UA 재생성"
+    },
+    {
+      "id": "feedback-findings",
+      "type": "rectangle",
+      "x": 90,
+      "y": 1280,
+      "width": 330,
+      "height": 100,
+      "backgroundColor": "#ffd8a8",
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "오류 · 누락 발견\n산출물 사용 중 관측"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.843Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-reuse",
+      "type": "rectangle",
+      "x": 520,
+      "y": 1280,
+      "width": 340,
+      "height": 100,
+      "backgroundColor": "#99e9f2",
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "재사용 산출물\n의사결정 · 블로그 · 슬라이드"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.844Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-graph",
+      "type": "rectangle",
+      "x": 960,
+      "y": 1280,
+      "width": 360,
+      "height": 100,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Hermes Cron + UA\ngraph/meta 재생성 · Gate C"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:12.147Z",
+      "version": 3
+    },
+    {
+      "id": "feedback-lint",
+      "type": "rectangle",
+      "x": 1420,
+      "y": 1280,
+      "width": 330,
+      "height": 100,
+      "backgroundColor": "#99e9f2",
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Wiki Health Check\nlint · link · count · hash"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.847Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-update",
+      "type": "rectangle",
+      "x": 1850,
+      "y": 1280,
+      "width": 430,
+      "height": 100,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "label": {
+        "text": "Canonical Transaction\npage + index.md + log.md 동기화"
+      },
+      "fontSize": 18,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.848Z",
+      "version": 2
+    },
+    {
+      "id": "feedback-note",
+      "type": "text",
+      "x": 90,
+      "y": 1440,
+      "width": 2150,
+      "height": 36,
+      "strokeColor": "#495057",
+      "text": "↺ 오류·누락은 raw 근거를 확인해 다음 Compile cycle로 환류한다. 어느 관문이든 실패하면 해당 실행의 산출물을 정본으로 승격하지 않는다.",
+      "fontSize": 17,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.850Z",
+      "version": 2
+    },
+    {
+      "id": "arrow-capture-compile",
+      "type": "arrow",
+      "x": 508,
+      "y": 550,
+      "strokeColor": "#1971c2",
+      "strokeWidth": 3,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "start": {
+        "id": "capture-main"
+      },
+      "end": {
+        "id": "compile-main"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.851Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-compile-discover",
+      "type": "arrow",
+      "x": 1048,
+      "y": 550,
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 3,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "start": {
+        "id": "compile-main"
+      },
+      "end": {
+        "id": "discover-main"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.852Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-discover-human",
+      "type": "arrow",
+      "x": 1587.997733389953,
+      "y": 555.0713746045227,
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 3,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114.00453322009389,
+          2.7143936480974844
+        ]
+      ],
+      "start": {
+        "id": "discover-main"
+      },
+      "end": {
+        "id": "human-gate-wf"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.678Z",
+      "updatedAt": "2026-07-21T08:08:07.854Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-notebook-hyp",
+      "type": "arrow",
+      "x": 1302.2839329744625,
+      "y": 821.9564906724231,
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          34.691393310334206,
+          61.08701865515377
+        ]
+      ],
+      "start": {
+        "id": "discover-notebook"
+      },
+      "end": {
+        "id": "discover-hypothesis"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.855Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-ua-hyp",
+      "type": "arrow",
+      "x": 1454.1311797029923,
+      "y": 821.8074888811523,
+      "strokeColor": "#9c36b5",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -37.891989035614415,
+          61.385022237695466
+        ]
+      ],
+      "start": {
+        "id": "discover-ua"
+      },
+      "end": {
+        "id": "discover-hypothesis"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.857Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-accepted-update",
+      "type": "arrow",
+      "x": 1805.9975603804353,
+      "y": 1006.2469504755443,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          214.00487923912942,
+          267.50609904891144
+        ]
+      ],
+      "start": {
+        "id": "status-accepted"
+      },
+      "end": {
+        "id": "feedback-update"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.858Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-contested-update",
+      "type": "arrow",
+      "x": 1944.5980333239856,
+      "y": 1007.4947321178189,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          98.93726668536192,
+          265.0105357643623
+        ]
+      ],
+      "start": {
+        "id": "status-contested"
+      },
+      "end": {
+        "id": "feedback-update"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.859Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-update-lint",
+      "type": "arrow",
+      "x": 1842,
+      "y": 1330,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -84,
+          0
+        ]
+      ],
+      "start": {
+        "id": "feedback-update"
+      },
+      "end": {
+        "id": "feedback-lint"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.862Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-lint-graph",
+      "type": "arrow",
+      "x": 1412,
+      "y": 1330,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -84,
+          0
+        ]
+      ],
+      "start": {
+        "id": "feedback-lint"
+      },
+      "end": {
+        "id": "feedback-graph"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.864Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-graph-reuse",
+      "type": "arrow",
+      "x": 952,
+      "y": 1330,
+      "strokeColor": "#2f9e44",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -84,
+          0
+        ]
+      ],
+      "start": {
+        "id": "feedback-graph"
+      },
+      "end": {
+        "id": "feedback-reuse"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.866Z",
+      "version": 4
+    },
+    {
+      "id": "arrow-reuse-findings",
+      "type": "arrow",
+      "x": 512,
+      "y": 1330,
+      "strokeColor": "#e8590c",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -84,
+          0
+        ]
+      ],
+      "start": {
+        "id": "feedback-reuse"
+      },
+      "end": {
+        "id": "feedback-findings"
+      },
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:07:34.679Z",
+      "updatedAt": "2026-07-21T08:08:07.867Z",
+      "version": 4
+    },
+    {
+      "id": "wf-automation-zone",
+      "type": "rectangle",
+      "x": 40,
+      "y": 175,
+      "width": 2310,
+      "height": 175,
+      "backgroundColor": "#d0ebff",
+      "strokeColor": "#0c8599",
+      "strokeStyle": "dashed",
+      "opacity": 35,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-07-21T08:08:13.213Z",
+      "updatedAt": "2026-07-21T08:08:13.213Z",
+      "version": 1
+    },
+    {
+      "id": "wf-automation-label",
+      "type": "text",
+      "x": 70,
+      "y": 190,
+      "width": 1500,
+      "height": 34,
+      "strokeColor": "#0c8599",
+      "text": "Hermes Gateway Scheduler · project workdir · fresh session · downstream gate enforcement",
+      "fontSize": 23,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:08:13.213Z",
+      "updatedAt": "2026-07-21T08:08:13.213Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-collect",
+      "type": "rectangle",
+      "x": 90,
+      "y": 240,
+      "width": 410,
+      "height": 70,
+      "backgroundColor": "#ffd8a8",
+      "strokeColor": "#e8590c",
+      "label": {
+        "text": "1. collect-evidence\nHermes Agent · Gate A"
+      },
+      "fontSize": 18,
+      "fontFamily": 5,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-compile",
+      "type": "rectangle",
+      "x": 630,
+      "y": 240,
+      "width": 410,
+      "height": 70,
+      "backgroundColor": "#a5d8ff",
+      "strokeColor": "#1971c2",
+      "label": {
+        "text": "2. compile-wiki\nllm-wiki · Gate B"
+      },
+      "fontSize": 18,
+      "fontFamily": 5,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-graph",
+      "type": "rectangle",
+      "x": 1170,
+      "y": 240,
+      "width": 410,
+      "height": 70,
+      "backgroundColor": "#eebefa",
+      "strokeColor": "#9c36b5",
+      "label": {
+        "text": "3. build-knowledge-graph\nUA · Gate C"
+      },
+      "fontSize": 18,
+      "fontFamily": 5,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-review",
+      "type": "rectangle",
+      "x": 1710,
+      "y": 240,
+      "width": 590,
+      "height": 70,
+      "backgroundColor": "#b2f2bb",
+      "strokeColor": "#2f9e44",
+      "label": {
+        "text": "4. deliver-review\ndiff · lint · graph report → Human Decision"
+      },
+      "fontSize": 18,
+      "fontFamily": 5,
+      "roundness": {
+        "type": 3
+      },
+      "fillStyle": "solid",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-arrow-1",
+      "type": "arrow",
+      "x": 508,
+      "y": 275,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "start": {
+        "id": "wf-auto-collect"
+      },
+      "end": {
+        "id": "wf-auto-compile"
+      },
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-arrow-2",
+      "type": "arrow",
+      "x": 1048,
+      "y": 275,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "start": {
+        "id": "wf-auto-compile"
+      },
+      "end": {
+        "id": "wf-auto-graph"
+      },
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-auto-arrow-3",
+      "type": "arrow",
+      "x": 1588,
+      "y": 275,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          114,
+          5.684341886080802e-14
+        ]
+      ],
+      "start": {
+        "id": "wf-auto-graph"
+      },
+      "end": {
+        "id": "wf-auto-review"
+      },
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-control-capture",
+      "type": "arrow",
+      "x": 295,
+      "y": 310,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          65
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-control-compile",
+      "type": "arrow",
+      "x": 835,
+      "y": 310,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          65
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-control-discover",
+      "type": "arrow",
+      "x": 1375,
+      "y": 310,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          65
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-control-decide",
+      "type": "arrow",
+      "x": 2005,
+      "y": 310,
+      "strokeColor": "#0c8599",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          65
+        ]
+      ],
+      "endArrowhead": "arrow",
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:13.214Z",
+      "version": 1
+    },
+    {
+      "id": "wf-stop-note",
+      "type": "text",
+      "x": 1600,
+      "y": 193,
+      "width": 700,
+      "height": 24,
+      "strokeColor": "#0c8599",
+      "text": "변경 없음 = 종료 · Gate 실패 = downstream 중단",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "createdAt": "2026-07-21T08:08:13.214Z",
+      "updatedAt": "2026-07-21T08:08:41.993Z",
+      "version": 2,
+      "originalText": "변경 없음 = 종료 · Gate 실패 = downstream 중단"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": null
+  }
+}

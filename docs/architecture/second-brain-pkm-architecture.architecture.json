@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "2nd-Brain PKM 아키텍처",
+    "subtitle": "원본 보존 → 정본 지식 컴파일 → 가설 탐색 → 사람 검증 → 재사용과 환류",
+    "output": "second-brain-pkm-architecture.html",
+    "viewBox": [1880, 1050]
+  },
+  "components": [
+    {
+      "id": "sources",
+      "type": "external",
+      "label": "논문 · 웹 · 영상",
+      "sublabel": "외부 자료",
+      "pos": [60, 260],
+      "size": [150, 66]
+    },
+    {
+      "id": "zotero",
+      "type": "database",
+      "label": "Zotero + MCP",
+      "sublabel": "서지 · 첨부 · 주석",
+      "pos": [260, 260],
+      "size": [160, 66]
+    },
+    {
+      "id": "raw",
+      "type": "database",
+      "label": "raw/ immutable",
+      "sublabel": "원본 · metadata · SHA-256",
+      "pos": [470, 260],
+      "size": [170, 66],
+      "tag": "evidence"
+    },
+    {
+      "id": "wiki_agent",
+      "type": "backend",
+      "label": "LLM Wiki Agent",
+      "sublabel": "선별 · 요약 · 연결",
+      "pos": [710, 260],
+      "size": [160, 66]
+    },
+    {
+      "id": "canonical",
+      "type": "database",
+      "label": "Canonical Markdown",
+      "sublabel": "entities · concepts · comparisons · queries",
+      "pos": [920, 260],
+      "size": [210, 66],
+      "tag": "long-term memory"
+    },
+    {
+      "id": "notebooklm",
+      "type": "cloud",
+      "label": "NotebookLM",
+      "sublabel": "선택 소스의 집중 질의 · 합성",
+      "pos": [1190, 100],
+      "size": [180, 70],
+      "tag": "hypothesis"
+    },
+    {
+      "id": "understand",
+      "type": "backend",
+      "label": "Understand Anything",
+      "sublabel": "graph · chat · dashboard · domain",
+      "pos": [1190, 450],
+      "size": [180, 70],
+      "tag": "observation"
+    },
+    {
+      "id": "review",
+      "type": "security",
+      "label": "Human Review Gate",
+      "sublabel": "원문 · 중복 · 모순 · 출처 · 신뢰도",
+      "pos": [1430, 260],
+      "size": [190, 66],
+      "tag": "promotion gate"
+    },
+    {
+      "id": "outputs",
+      "type": "frontend",
+      "label": "Reusable Outputs",
+      "sublabel": "에이전트 · 의사결정 · 블로그 · 발표",
+      "pos": [1670, 260],
+      "size": [170, 66]
+    },
+    {
+      "id": "governance",
+      "type": "security",
+      "label": "SCHEMA · index · log",
+      "sublabel": "frontmatter · provenance · lint",
+      "pos": [710, 470],
+      "size": [160, 70]
+    },
+    {
+      "id": "obsidian",
+      "type": "frontend",
+      "label": "Obsidian",
+      "sublabel": "읽기 · 편집 · 역링크",
+      "pos": [920, 470],
+      "size": [180, 70]
+    },
+    {
+      "id": "my_notes",
+      "type": "external",
+      "label": "My Notes",
+      "sublabel": "개인 경험과 판단을 별도 관리",
+      "pos": [920, 640],
+      "size": [180, 70],
+      "tag": "separate"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "01 / EVIDENCE · 원본과 출처",
+      "wraps": ["sources", "zotero", "raw"],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "02 / CANONICAL MEMORY · 검토된 장기 기억",
+      "wraps": ["wiki_agent", "canonical", "governance", "obsidian", "my_notes"],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "03 / DISCOVERY · 탐색과 가설",
+      "wraps": ["notebooklm", "understand"],
+      "pad": 24
+    },
+    {
+      "kind": "security-group",
+      "label": "04 / DECISION · 사람 검증과 재사용",
+      "wraps": ["review", "outputs"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "from": "sources",
+      "to": "zotero"
+    },
+    {
+      "from": "zotero",
+      "to": "raw"
+    },
+    {
+      "from": "raw",
+      "to": "wiki_agent",
+      "label": "compile",
+      "variant": "emphasis"
+    },
+    {
+      "from": "wiki_agent",
+      "to": "canonical",
+      "variant": "emphasis"
+    },
+    {
+      "from": "canonical",
+      "to": "notebooklm",
+      "label": "선택 소스",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [[1025, 135]]
+    },
+    {
+      "from": "canonical",
+      "to": "understand",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[1155, 295], [1155, 485]]
+    },
+    {
+      "from": "notebooklm",
+      "to": "review",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [[1525, 135]]
+    },
+    {
+      "from": "understand",
+      "to": "review",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [[1525, 485]]
+    },
+    {
+      "from": "review",
+      "to": "outputs",
+      "label": "accepted",
+      "variant": "emphasis"
+    },
+    {
+      "from": "governance",
+      "to": "wiki_agent",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "from": "canonical",
+      "to": "obsidian",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "my_notes",
+      "to": "obsidian",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "from": "review",
+      "to": "wiki_agent",
+      "label": "검증 통과 환류",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "via": [[1525, 770], [895, 770], [895, 295]],
+      "labelAt": [1210, 770],
+      "labelDy": -10,
+      "width": 1.8
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "보존 원칙",
+      "items": [
+        "raw/는 수정하지 않고 원본·수집 시점·hash를 보존",
+        "모든 핵심 주장은 실제 source 경로로 추적"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "가설과 지식의 경계",
+      "items": [
+        "NotebookLM 답변과 UA 연결은 검토 전 가설",
+        "외부 주장·AI 합성·개인 판단을 같은 층에 섞지 않음"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "환류 조건",
+      "items": [
+        "검증된 결과만 canonical Markdown으로 승격",
+        "lint 후 UA 지식그래프 재생성"
+      ]
+    }
+  ]
+}
