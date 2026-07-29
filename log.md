@@ -74,3 +74,47 @@
 - Correction: the immediately preceding lint entry reports 27 source references, but the measured canonical frontmatter total is 30.
 - Unchanged measurements: 17 claim-level markers, 33 canonical links, 8 canonical pages, and 0 lint errors or warnings.
 - Updated: `log.md` only; no raw or canonical page was changed.
+
+## [2026-07-29] delete | canonical wiki 및 지식그래프 초기화
+
+- Preserved: `raw/` 아래 원본 Markdown 13개는 변경하지 않음.
+- Deleted canonical pages:
+  - `concepts/ai-knowledge-workflow.md`
+  - `concepts/ai-personal-knowledge-management.md`
+  - `concepts/llm-wiki.md`
+  - `concepts/research-feedback-loop.md`
+  - `concepts/second-brain-research-workflow.md`
+  - `comparisons/knowledge-tool-roles.md`
+  - `queries/notebooklm-query-compounding.md`
+  - `queries/ua-knowledge-graph-workflow.md`
+- Deleted derived graph state:
+  - `.ua/knowledge-graph.json`
+  - `.ua/meta.json`
+- Updated:
+  - `index.md`
+  - `log.md`
+- Canonical state: 0 pages; 새 canonical 문서 생성과 이후 지식그래프 재생성을 위한 초기 상태.
+
+## [2026-07-29] delete | raw 원본 자료 초기화
+
+- Deleted raw source records:
+  - `raw/notebooklm/2026-07-16-all-notes.md`
+  - `raw/notebooklm/codegraph-github.md`
+  - `raw/notebooklm/graphify-github.md`
+  - `raw/notebooklm/llm-wiki-skill-github.md`
+  - `raw/notebooklm/llm-wiki-zotero-notebooklm-youtube.md`
+  - `raw/notebooklm/notebooklm-py-github.md`
+  - `raw/notebooklm/understand-anything-github.md`
+  - `raw/notebooklm/zotero-mcp-github.md`
+  - `raw/web/NomaDamasslides-grab Best harness + editor + linter for generating slides in Claude Code  Codex - Claude Design Open Source Alternative.md`
+  - `raw/web/stablyaiorca Orca is the ADE for working with a fleet of parallel agents. Run any coding agent with your own subscription. Available on desktop and mobile..md`
+  - `raw/youtube/📺 How To Build LLM Wiki In Obsidian 🧠 A Memory Layer For Any Agentic AI.md`
+  - `raw/youtube/📺 LLM Wiki를 업그레이드하는 외부 지식 시스템! 연구자를 위한 최강의 조합 Zotero × Notebook × Obsidian x Claude Code.md`
+  - `raw/youtube/📺 Orca Is the Free Cursor Killer Nobody's Talking About!.md`
+- Created empty directory placeholders:
+  - `raw/notebooklm/.gitkeep`
+  - `raw/web/.gitkeep`
+  - `raw/youtube/.gitkeep`
+- Updated:
+  - `log.md`
+- Result: raw source records 0, canonical pages 0, derived knowledge-graph state 0.
