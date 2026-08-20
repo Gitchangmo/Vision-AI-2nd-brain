@@ -118,3 +118,11 @@
 - Updated:
   - `log.md`
 - Result: raw source records 0, canonical pages 0, derived knowledge-graph state 0.
+
+## 2026-08-20
+
+- Replaced the initial schema with a simplified Industrial Vision AI wiki schema.
+- Added `raw/papers/patchcore-paper.md` as an initial source record.
+- Created draft canonical pages for Industrial Anomaly Detection, Memory Bank, MVTec AD, and PatchCore.
+- Added path-based wikilinks between the initial concept pages.
+- Updated `index.md` with the initial concept pages.
