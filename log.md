@@ -126,3 +126,85 @@
 - Created draft canonical pages for Industrial Anomaly Detection, Memory Bank, MVTec AD, and PatchCore.
 - Added path-based wikilinks between the initial concept pages.
 - Updated `index.md` with the initial concept pages.
+
+## [2026-10-20] repair | wiki 정합성 정리
+
+- Issues found:
+  - `index.md`의 `Total pages: 0`이 실제 등재 4건과 불일치.
+  - `concepts/edge-inference.md`가 0바이트 빈 파일이며 index에 없음.
+  - 직전 2026-08-20 기록이 언급한 `raw/papers/patchcore-paper.md`는 존재하지 않으며,
+    실제 경로는 `raw/papers/roth-2022-patchcore.md`. 해당 기록은 헤딩 형식도
+    `## [YYYY-MM-DD] <action> | <subject>`를 따르지 않음. append-only 원칙에 따라
+    기존 기록은 수정하지 않고 이 항목으로 정정함.
+  - `AGENTS.md`가 현재 `SCHEMA.md`(단순화된 Industrial Vision AI 스키마)와 다른
+    이전 스키마를 설명함.
+  - `SCHEMA.md`, `concepts/memory-bank.md`, `concepts/patchcore.md`에 최종 줄바꿈이
+    없음. 내용 변경 없이 최종 LF만 추가함.
+- Deleted:
+  - `concepts/edge-inference.md`
+- Updated:
+  - `SCHEMA.md`
+  - `concepts/memory-bank.md`
+  - `concepts/patchcore.md`
+  - `index.md`
+  - `AGENTS.md`
+  - `log.md`
+
+## [2026-10-20] ingest | 비전검사 도입 공개 자료 1차 수집
+
+- Created:
+  - `raw/papers/bergmann-2019-mvtec-ad.md`
+  - `raw/papers/martin-2021-surface-defect-detection-strategies.md`
+  - `raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md`
+  - `raw/web/anomalib-documentation.md`
+  - `raw/web/fictiv-injection-molding-defects.md`
+  - `raw/web/keyence-machine-vision-lighting-selection.md`
+  - `raw/web/minitab-attribute-agreement-analysis-overview.md`
+  - `raw/web/mvtec-ad-dataset-page.md`
+- Notes: 논문 2건은 PDF에서 `pdftotext`로 추출해 확인. 웹 6건은 자동 추출 결과이며
+  각 파일의 capture note에 재확인 필요를 표시함. Cognex 자료는 HTTP 429로 미수집.
+- Updated:
+  - `log.md`
+
+## [2026-10-20] create | 비전검사 공정 도입 가이드와 기반 개념
+
+- Created:
+  - `concepts/attribute-agreement-analysis.md`
+  - `concepts/injection-molding-defects.md`
+  - `concepts/machine-vision-lighting.md`
+  - `concepts/surface-defect-detection.md`
+  - `entities/anomalib.md`
+  - `queries/vision-inspection-introduction-guide.md`
+- Updated:
+  - `concepts/industrial-anomaly-detection.md` (sources 추가, 내용 보강)
+  - `concepts/mvtec-ad.md` (sources 추가, 구성·라이선스·평가 내용 보강)
+  - `SCHEMA.md` (태그 8개 등록: `task/classification`, `deployment/openvino`,
+    `hardware/lighting`, `hardware/camera`, `domain/injection-molding`,
+    `domain/rubber-molding`, `process/introduction`, `quality/msa`)
+  - `index.md`
+  - `log.md`
+- Canonical state: 10 pages, 모두 `status: draft`.
+
+## [2026-10-20] lint | 출처·인용 검증
+
+- Method: 웹 원문 6건을 직접 내려받아 raw 인용 64개를 글자 단위로 대조. 논문 2건의
+  인용 22개는 `pdftotext` 추출 원문과 대조. 정식 문서의 `^[...]` 표시가 출처 범위를
+  넘는지 수동 점검.
+- Fixed capture errors (raw 본문을 원문에 맞게 정정):
+  - `raw/web/anomalib-documentation.md`: 인용문의 빠진 쉼표 복원, 출처에 없는
+    publisher 설명 삭제.
+  - `raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md`: 저자
+    표기를 웹 메타데이터(Luke Weaver)와 PDF판(Daryl Martin, 2013-02)으로 구분.
+  - `raw/papers/martin-2021-surface-defect-detection-strategies.md`: Trelleborg는
+    공저자 소속이며 사례 회사는 논문에 명시되지 않음을 명확화. E2/E3의 데이터 증강
+    적용 인용 추가.
+  - 웹 raw 6건의 capture note를 대조 완료 상태로 갱신.
+- Fixed over-claims in canonical pages:
+  - `concepts/machine-vision-lighting.md`: 백라이트 용도를 출처 범위로 축소.
+  - `concepts/injection-molding-defects.md`: 출처에 없는 별칭 삭제.
+  - `concepts/surface-defect-detection.md`: 사전학습 수치에 데이터 증강 병행 명시.
+  - `queries/vision-inspection-introduction-guide.md`: 불량별 조명 매칭을 출처 근거와
+    가설로 분리, 룰 기반 근거를 variation model 범위로 한정, 사전학습 수치 정정.
+- Result: 인용 86개 원문 일치, frontmatter·태그·출처 경로·표시·링크·index 검사 통과.
+- Updated:
+  - `log.md`

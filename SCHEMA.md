@@ -56,6 +56,7 @@ updated: YYYY-MM-DD
 - `task/anomaly-detection`
 - `task/object-detection`
 - `task/segmentation`
+- `task/classification`
 - `constraint/low-data`
 - `constraint/real-time`
 - `constraint/edge-device`
@@ -66,6 +67,13 @@ updated: YYYY-MM-DD
 - `deployment/onnx`
 - `deployment/tensorrt`
 - `deployment/gstreamer`
+- `deployment/openvino`
+- `hardware/lighting`
+- `hardware/camera`
+- `domain/injection-molding`
+- `domain/rubber-molding`
+- `process/introduction`
+- `quality/msa`
 
 새 태그가 필요하면 임의로 만들지 말고,
 SCHEMA.md의 이 목록에 먼저 추가한다.
