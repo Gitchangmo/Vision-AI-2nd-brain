@@ -208,3 +208,44 @@
 - Result: 인용 86개 원문 일치, frontmatter·태그·출처 경로·표시·링크·index 검사 통과.
 - Updated:
   - `log.md`
+
+## [2026-10-21] ingest | 도입 가이드 약점 보강 자료 2차 수집
+
+- Created:
+  - `raw/papers/hinder-2023-concept-drift-survey.md`
+  - `raw/papers/maslanka-2025-vision-plc-integration.md`
+  - `raw/papers/yang-2020-diagnosing-concept-drift.md`
+  - `raw/web/commonlands-field-of-view.md`
+  - `raw/web/commonlands-spatial-resolution.md`
+  - `raw/web/imaging-source-lens-selection.md`
+  - `raw/web/keyence-2d-measurement-pixel-resolution.md`
+  - `raw/web/keyence-ai-in-machine-vision.md`
+  - `raw/web/keyence-selecting-machine-vision-camera.md`
+  - `raw/web/overview-ai-injection-molding-inspection.md`
+  - `raw/web/pekat-deep-learning-vs-rule-based.md`
+  - `raw/web/roboflow-computer-vision-plc-integration.md`
+- Method: 모든 원문을 curl로 내려받아 텍스트 변환 후 직접 인용. 인용 95개를 원문과
+  기계 대조해 전부 일치 확인. 논문 섹션 번호도 원문 헤딩과 대조.
+- Notes:
+  - 검색 요약에 나온 Yang 2020의 메인보드 높이 변화 사례는 원문에 없어 제외.
+  - Cognex 가이드는 다시 HTTP 429로 미수집.
+  - Overview.ai는 싱크마크 조명을 페이지마다 다르게 제시(저각 vs 돔). 불일치로 기록.
+- Updated:
+  - `log.md`
+
+## [2026-10-21] create | 카메라·렌즈, PLC 연동, 드리프트, 검사 방식 비교
+
+- Created:
+  - `comparisons/rule-based-vs-deep-learning-inspection.md`
+  - `concepts/camera-and-lens-selection.md`
+  - `concepts/concept-drift.md`
+  - `concepts/vision-plc-integration.md`
+- Updated:
+  - `concepts/injection-molding-defects.md` (불량별 검출 방법, 출처 내 불일치 추가)
+  - `queries/vision-inspection-introduction-guide.md` (세부 내용을 개념 문서로 넘기고
+    해상도·방식 선택·PLC·드리프트 단계 보강, 200줄 이내 유지)
+  - `SCHEMA.md` (태그 등록: `deployment/plc`, `operation/drift-monitoring`)
+  - `AGENTS.md` (raw·canonical 개수)
+  - `index.md`
+  - `log.md`
+- Canonical state: 14 pages, 모두 `status: draft`.

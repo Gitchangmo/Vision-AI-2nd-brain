@@ -68,6 +68,8 @@ updated: YYYY-MM-DD
 - `deployment/tensorrt`
 - `deployment/gstreamer`
 - `deployment/openvino`
+- `deployment/plc`
+- `operation/drift-monitoring`
 - `hardware/lighting`
 - `hardware/camera`
 - `domain/injection-molding`

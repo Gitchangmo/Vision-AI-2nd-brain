@@ -6,8 +6,9 @@ tags:
   - domain/injection-molding
 sources:
   - raw/web/fictiv-injection-molding-defects.md
+  - raw/web/overview-ai-injection-molding-inspection.md
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-21
 ---
 
 # Injection Molding Defects
@@ -32,18 +33,30 @@ updated: 2026-10-20
 
 ^[raw/web/fictiv-injection-molding-defects.md]
 
-## 비전검사 관점의 분류 (가설)
+## 비전검사 관점의 검출 방법
 
-아래 분류는 출처가 아닌 추론이며, 실제 샘플로 검증해야 한다.
+아래 매칭은 AI 비전 장비 벤더 1곳의 자료이며, 실제 샘플로 검증해야 한다.
 
-- **형상·치수형**: short shot, flash, warping → 백라이트·외곽 측정이나
-  룰 기반 검사로 시작할 후보.
-- **표면 요철형**: sink mark, weld line, flow line, jetting →
-  저각 암시야나 방향성 조명으로 대비를 만들어야 할 후보.
-- **색상형**: discoloration → 색/파장 선택이 중요한 후보.
-- **내부형**: vacuum void → 표면 카메라로 안 보일 수 있음.
+| 불량 | 벤더가 제시한 방법 |
+| --- | --- |
+| Sink marks | 저각(grazing-angle) 구조광 ^[raw/web/overview-ai-injection-molding-inspection.md] |
+| 반짝이는 표면 | 확산 돔 조명 ^[raw/web/overview-ai-injection-molding-inspection.md] |
+| 투명·반투명 부품의 기포·이물 | 백라이트 ^[raw/web/overview-ai-injection-molding-inspection.md] |
+| Short shots | 양품 기준 이미지와 실루엣 비교 ^[raw/web/overview-ai-injection-molding-inspection.md] |
+| Weld lines | 표면 텍스처 분류 + 위치별 임계값(안 보이는 부위는 허용) ^[raw/web/overview-ai-injection-molding-inspection.md] |
 
-조명 기법은 [[concepts/machine-vision-lighting|Machine Vision Lighting]]을 참고한다.
+- **출처 내 불일치**: 같은 벤더의 다른 페이지는 싱크마크 조명 예로 돔 조명을
+  든다. 저각과 돔 중 무엇이 맞는지는 샘플 테스트로 정한다.
+  ^[raw/web/overview-ai-injection-molding-inspection.md]
+- **한계**: 표면에 흔적이 없는 내부 기포는 카메라로 볼 수 없다.
+  ^[raw/web/overview-ai-injection-molding-inspection.md]
+- **광택·텍스처 면**: 광택 면은 반사광이 결함처럼 보이거나 결함을 가리고,
+  텍스처 면은 고정 임계값이 무늬를 노이즈로 읽는다.
+  ^[raw/web/overview-ai-injection-molding-inspection.md]
+
+조명 기법은 [[concepts/machine-vision-lighting|Machine Vision Lighting]]을,
+방식 선택은
+[[comparisons/rule-based-vs-deep-learning-inspection|Rule-Based vs Deep Learning Inspection]]을 참고한다.
 
 ## 관련 지식
 
@@ -54,4 +67,4 @@ updated: 2026-10-20
 ## TODO
 
 - 고무 압착(compression molding) 불량 유형 출처를 수집해 별도 문서로 만든다.
-- 출처가 제조 서비스 기업 블로그 1건뿐이다. 교재·학술 출처로 교차 확인한다.
+- 출처 2건 모두 기업 블로그다. 교재·학술 출처로 교차 확인한다.

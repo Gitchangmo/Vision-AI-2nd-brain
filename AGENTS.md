@@ -13,7 +13,7 @@
 - The repository root is the wiki root; no database, service, or build system exists.
 - `SCHEMA.md` is the operational contract. `README.md` covers optional tool setup
   but describes a generic PARA layout that is not the current repository structure.
-- Current curated state: 9 raw Markdown records and 10 canonical pages.
+- Current curated state: 21 raw Markdown records and 14 canonical pages.
 
 ## START HERE
 

@@ -5,19 +5,27 @@ status: draft
 tags:
   - process/introduction
   - hardware/lighting
-  - constraint/low-data
+  - hardware/camera
+  - deployment/plc
+  - operation/drift-monitoring
   - metric/false-positive-rate
 sources:
   - raw/papers/bergmann-2019-mvtec-ad.md
   - raw/papers/martin-2021-surface-defect-detection-strategies.md
+  - raw/papers/maslanka-2025-vision-plc-integration.md
+  - raw/papers/hinder-2023-concept-drift-survey.md
   - raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md
-  - raw/web/keyence-machine-vision-lighting-selection.md
+  - raw/web/keyence-selecting-machine-vision-camera.md
+  - raw/web/commonlands-spatial-resolution.md
   - raw/web/minitab-attribute-agreement-analysis-overview.md
   - raw/web/fictiv-injection-molding-defects.md
+  - raw/web/overview-ai-injection-molding-inspection.md
+  - raw/web/pekat-deep-learning-vs-rule-based.md
+  - raw/web/roboflow-computer-vision-plc-integration.md
   - raw/web/anomalib-documentation.md
   - raw/web/mvtec-ad-dataset-page.md
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-21
 ---
 
 # 비전검사 공정 도입 가이드
@@ -25,176 +33,150 @@ updated: 2026-10-20
 > **질문**: 새 공정(사출, 고무 압착 등)에 비전검사를 도입할 때
 > 무엇을, 어떤 순서로 검토해야 하나?
 
-제품을 가리지 않는 일반 절차다. 각 단계는 **목적 → 할 일 → 통과 기준**
-순서로 정리했다. 출처 표시(^[...])가 없는 문장은 정리자의 제안이며
-현장 경험으로 검증·수정해야 한다.
-
-## 전체 흐름
+제품을 가리지 않는 일반 절차다. 세부 내용은 각 단계의 링크 문서에 있다.
+출처 표시(^[...])가 없는 문장은 정리자의 제안이며 현장 경험으로 검증해야 한다.
 
 ```text
-1 요구사항 정의 → 2 현행 검사 기준선 → 3 광학 타당성 검토
-→ 4 방식 선택 → 5 데이터·라벨링 → 6 PoC 평가 → 7 라인 파일럿 → 8 양산 이관·운영
+1 요구사항 → 2 현행 기준선 → 3 광학 타당성 → 4 방식 선택
+→ 5 데이터·라벨링 → 6 PoC → 7 라인 파일럿(PLC 연동) → 8 양산·운영(드리프트)
 ```
 
 ## 1단계. 요구사항 정의
 
 **목적**: "무엇을 불량으로 볼지"를 문서로 고정한다.
 
-- 불량 정의서: 불량 유형, 위치, 최소 크기, 한도 견본(OK/NG 경계 샘플).
+- 불량 정의서: 유형, 위치, 최소 크기, 한도 견본(OK/NG 경계 샘플).
   사출이면 [[concepts/injection-molding-defects|Injection Molding Defects]]의
   10종을 출발 목록으로 쓴다. ^[raw/web/fictiv-injection-molding-defects.md]
-- 생산 조건: 택트타임, 부품 공급 방식(컨베이어, 로봇, 회전), 검사면 수.
-- 판정 정책: 미검(불량 유출)과 과검(양품 폐기) 중 무엇을 더 줄여야 하는지,
-  목표 수치는 얼마인지.
+- 생산 조건: 택트타임, 부품 공급 방식, 검사면 수.
+- 판정 정책: 미검(유출)과 과검(양품 폐기) 중 무엇을 더 줄일지, 목표 수치.
 - 연동: NG 배출 방식, PLC/MES 신호, 결과 이미지 보관 기간.
 
-**통과 기준**: 불량 정의서와 목표 미검률·과검률에 품질·생산 부서가 서명.
+**통과 기준**: 불량 정의서와 목표 미검률·과검률에 품질·생산 부서 합의.
 
-## 2단계. 현행 검사 기준선 측정
+## 2단계. 현행 검사 기준선
 
-**목적**: 비교 기준이 없으면 도입 효과를 증명할 수 없다.
-
-- 현행 육안검사자를 대상으로
-  [[concepts/attribute-agreement-analysis|Attribute Agreement Analysis]]를
-  수행한다. 검사자 자신, 검사자 간, 기준 대비 일치성을 본다.
+- 육안검사자 대상
+  [[concepts/attribute-agreement-analysis|Attribute Agreement Analysis]]로
+  검사자 자신, 검사자 간, 기준 대비 일치성을 잰다.
   ^[raw/web/minitab-attribute-agreement-analysis-overview.md]
-- 사람끼리 판정이 갈리는 불량 유형을 따로 표시한다. 이 유형은 정의서를
-  다시 다듬거나 AI 라벨링에서 특별 관리한다.
-- 같은 표본 세트를 보관해 두고 6단계에서 비전 시스템 평가에 재사용한다.
+- 사람끼리 판정이 갈리는 불량은 정의서를 다듬고 라벨링에서 특별 관리한다.
+- 같은 표본 세트를 6단계 평가에 재사용한다.
 
-**통과 기준**: 기준선 수치 확보, 판정 불일치 유형 목록 작성.
+**통과 기준**: 기준선 수치, 판정 불일치 유형 목록.
 
-## 3단계. 광학 타당성 검토 (가장 먼저, 가장 중요)
+## 3단계. 광학 타당성 검토 (가장 중요)
 
-**목적**: 불량이 **이미지에서 보이는지** 확인한다. 안 보이면 어떤
-알고리즘도 못 찾는다.
+**목적**: 불량이 **이미지에서 보이는지** 확인한다. 안 보이면 어떤 알고리즘도 못 찾는다.
 
-- 조명은 역사적으로 가장 나중에 정해지던 요소였다. 체계적 조명 분석을
-  먼저 한다. ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
-- 불량 유형별로 조명을 바꿔가며 실제 샘플을 촬영한다.
-  [[concepts/machine-vision-lighting|Machine Vision Lighting]] 참고.
-  출처가 직접 말하는 근거:
-  - 저각 조명은 스크래치·질감 변화를 어두운 배경 위에 드러낸다.
-    ^[raw/web/keyence-machine-vision-lighting-selection.md]
-  - 돔 조명은 여러 방향에서 빛을 비춘다.
-    ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
-  - 백라이트는 밝은 배경에 어두운 실루엣을 만든다.
-    ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
-  - 물체 색의 보색 조명을 쓰면 물체가 거의 검게 보여 대비가 커진다.
-    ^[raw/web/keyence-machine-vision-lighting-selection.md]
-
-  사출 불량에 대입한 시작 가설(출처 없음, 샘플로 검증 필요):
-  싱크마크·웰드라인 → 저각 조명, 쇼트샷·플래시 → 백라이트 외곽 검사,
-  반짝이는 곡면 → 돔 조명, 변색 → 보색 조명 또는 컬러 카메라.
-- 해상도: 최소 불량 크기가 이미지에서 몇 픽셀인지 계산한다.
-  불량이 부품보다 매우 작으면 부품을 구간으로 나눠 촬영한다.
-  고무 성형품 사례는 부품을 회전시키며 부품당 약 135장을 찍었다.
-  ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
+**조명** → [[concepts/machine-vision-lighting|Machine Vision Lighting]]
+- 조명은 역사적으로 가장 나중에 정해지던 요소였다. 먼저 분석한다.
+  ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
+- 사출 불량 대부분의 검사 실패는 알고리즘이 아니라 조명 실패라는 벤더 의견이 있다.
+  ^[raw/web/overview-ai-injection-molding-inspection.md]
+- 불량별 조명 후보(싱크마크 → 저각 또는 돔, 투명 부품 → 백라이트 등)는
+  사출 불량 문서에 정리했다. 출처 간에도 갈리므로 샘플로 정한다.
 - 외란광(천장 조명, 햇빛)을 차광·필터로 막는다.
   ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
-- 공간 제약(설치 거리, 간섭)을 현장에서 확인한다.
-  ^[raw/web/advanced-illumination-practical-guide-machine-vision-lighting.md]
 
-**통과 기준**: 모든 필수 불량 유형이 사람 눈으로 이미지에서 구분됨.
-안 보이는 유형은 범위에서 빼거나 다른 센서(3D, 투과 등)를 검토.
+**해상도·렌즈** → [[concepts/camera-and-lens-selection|Camera and Lens Selection]]
+- 픽셀 분해능 = 시야 ÷ 픽셀 수. 생산 검사는 결함을 가로질러 3~5픽셀을
+  출발점으로 삼고, 현장 조건 때문에 2~3배 여유를 둔다.
+  ^[raw/web/commonlands-spatial-resolution.md]
+- 해상도로 나쁜 조명을 메울 수 없다.
+  ^[raw/web/keyence-selecting-machine-vision-camera.md]
+- 불량이 부품보다 매우 작으면 구간을 나눠 찍는다. 고무 성형품 사례는 부품을
+  회전시키며 부품당 약 135장을 찍었다.
+  ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
+- 표면에 흔적이 없는 내부 결함은 카메라로 볼 수 없다.
+  ^[raw/web/overview-ai-injection-molding-inspection.md]
+
+**통과 기준**: 필수 불량 유형이 이미지에서 눈으로 구분됨. 안 보이는 유형은
+범위에서 빼거나 다른 센서(3D, 투과 등)를 검토.
 
 ## 4단계. 검사 방식 선택
 
-| 상황 | 우선 후보 | 근거 |
-| --- | --- | --- |
-| 치수·위치·유무, 형상이 일정 | 룰 기반(측정, 패턴 매칭) | 제안(출처 미수집). 참고로 픽셀 비교형 고전 방법인 variation model은 사전 정렬이 필요했다 ^[raw/papers/bergmann-2019-mvtec-ad.md] |
-| 불량 샘플이 거의 없음, 불량 종류를 미리 모름 | 이상 탐지(정상만 학습) | ^[raw/papers/bergmann-2019-mvtec-ad.md] |
-| 불량 샘플 수집 가능, 유형별 구분 필요 | 지도학습 분류·분할 | ^[raw/papers/martin-2021-surface-defect-detection-strategies.md] |
+→ [[comparisons/rule-based-vs-deep-learning-inspection|Rule-Based vs Deep Learning Inspection]]
 
-- 이상 탐지는 제조 공정에서 어떤 불량이 생길지 미리 모르는 경우가 많고,
-  불량 이미지가 매우 적기 때문에 유용하다.
-  ^[raw/papers/bergmann-2019-mvtec-ad.md]
-  대표 방법은 [[concepts/patchcore|PatchCore]],
-  개념은 [[concepts/industrial-anomaly-detection|Industrial Anomaly Detection]].
-- 지도학습은 [[concepts/surface-defect-detection|Surface Defect Detection]] 참고.
-  출력 형태(이진·다중·분할)는 현장이 필요로 하는 정보에 맞춰 고른다.
-  ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
-- 실무에서는 섞어 쓰는 경우가 많다. 예: 룰 기반으로 위치를 잡고,
-  AI로 표면을 판정.
+| 상황 | 우선 후보 |
+| --- | --- |
+| 치수·정렬·유무, 형상 일정, 기준 명확 | 룰 기반 ^[raw/web/pekat-deep-learning-vs-rule-based.md] |
+| 불량이 드물거나 처음 보거나 정의하기 어려움 | 이상 탐지 ^[raw/web/pekat-deep-learning-vs-rule-based.md] |
+| 불량 샘플 수집 가능, 유형 구분 필요 | 지도학습 분류·분할 ^[raw/papers/martin-2021-surface-defect-detection-strategies.md] |
+
+- 실무에서는 섞어 쓴다. 예: 룰 기반으로 위치를 잡고 딥러닝으로 결함 판정.
+  ^[raw/web/pekat-deep-learning-vs-rule-based.md]
+- 이상 탐지 방법은 [[concepts/patchcore|PatchCore]],
+  지도학습은 [[concepts/surface-defect-detection|Surface Defect Detection]] 참고.
 
 ## 5단계. 데이터 수집·라벨링
 
-- 촬영 조건(조명, 거리, 노출)을 3단계에서 확정한 값으로 고정한 뒤 수집한다.
-- 정상 데이터: 로트·금형 캐비티·소재 변동을 포함한다.
-- 불량 데이터: 매우 불균형하다. 고무 사례는 결함 이미지가 약 1.5%였고
-  undersampling으로 균형을 맞췄다.
+- 3단계에서 확정한 촬영 조건을 고정한 뒤 수집한다.
+- 정상 데이터에는 로트·금형 캐비티·소재 변동을 포함한다.
+- 불량은 매우 불균형하다. 고무 사례는 결함 이미지가 약 1.5%였다.
   ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
-- 데이터가 적으면 사전학습 가중치를 쓴다. 고무 사례에서 ImageNet
-  사전학습과 데이터 증강을 함께 적용하자 정확도가 0.664에서 0.974로 올랐다.
+- 데이터가 적으면 사전학습 가중치와 데이터 증강을 쓴다.
   ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
-- 라벨링 기준서를 만들고, 2단계에서 판정이 갈린 유형은 여러 명이
-  교차 검토한다.
+- 라벨링 기준서를 만들고, 2단계에서 갈린 유형은 교차 검토한다.
 
 ## 6단계. PoC 평가
 
-- 학습/검증/평가 데이터를 섞지 않는다. 평가셋에 한도 견본을 포함한다.
-- 지표는 정확도만 보지 말고 미검률·과검률(혼동행렬)로 본다.
-  불균형 데이터에서는 F1도 함께 본다.
+- 지표는 미검률·과검률(혼동행렬)로 보고, 불균형 데이터는 F1도 본다.
   ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
-- **AUROC가 높아도 실제 임계값 판정은 실패할 수 있다.** 정상 이미지만으로
-  좋은 임계값을 정하기는 어렵다.
+- **AUROC가 높아도 임계값 판정은 실패할 수 있다.** 임계값은 별도 검증셋과
+  최소 결함 면적 같은 현장 기준으로 정한다.
   ^[raw/papers/bergmann-2019-mvtec-ad.md]
-  → 임계값은 별도 검증셋으로 정하고, 최소 결함 면적 같은 현장 기준을 같이 쓴다.
-  ^[raw/papers/bergmann-2019-mvtec-ad.md]
-- 어떤 방법도 모든 대상에서 고르게 잘하지 않았다. 여러 모델을 비교한다.
-  ^[raw/papers/bergmann-2019-mvtec-ad.md]
-  이상 탐지 모델 비교에는 [[entities/anomalib|Anomalib]]을 쓸 수 있다.
+- 여러 모델을 비교한다([[entities/anomalib|Anomalib]] 활용 가능).
   ^[raw/web/anomalib-documentation.md]
-- 공개 데이터셋 [[concepts/mvtec-ad|MVTec AD]]는 비상업 라이선스다.
-  사내 제품 모델 학습에 쓰기 전 확인한다. ^[raw/web/mvtec-ad-dataset-page.md]
-- 2단계의 육안 기준선과 같은 표본으로 비교한다.
+- [[concepts/mvtec-ad|MVTec AD]]는 비상업 라이선스다.
+  ^[raw/web/mvtec-ad-dataset-page.md]
+- 2단계 육안 기준선과 같은 표본으로 비교한다.
 
-**통과 기준**: 목표 미검률·과검률 달성, 택트타임 내 추론.
+**통과 기준**: 목표 미검률·과검률 달성, 택트타임 내 처리.
 
-## 7단계. 라인 파일럿
+## 7단계. 라인 파일럿과 PLC 연동
 
-- 실제 라인에서 기존 검사와 병행 운영(shadow mode)한다.
-- 검사자가 결과를 신뢰할 수 있게 판정 근거(히트맵, 결함 위치)를 보여준다.
-  고무 사례의 검사자들도 판정 근거 추적 가능성을 중요하게 봤다.
+→ [[concepts/vision-plc-integration|Vision–PLC Integration]]
+
+- 비전은 판정, PLC는 타이밍·인터록·배출을 맡는다.
+  ^[raw/web/roboflow-computer-vision-plc-integration.md]
+- 타이밍 예산: 노출, 전송, 추론, PLC 통신·스캔, 액추에이터 응답, 안전 여유가
+  카메라~배출기 이동 시간 안에 끝나야 한다.
+  ^[raw/web/roboflow-computer-vision-plc-integration.md]
+- PLC에서 연속 3회 결과를 다수결로 판정해 과검률을 7.5%에서 5.4%로 줄인
+  사례가 있다. ^[raw/papers/maslanka-2025-vision-plc-integration.md]
+- 기존 검사와 병행 운영하고, 판정 근거(히트맵, 결함 위치)를 검사자에게 보여준다.
   ^[raw/papers/martin-2021-surface-defect-detection-strategies.md]
-- 연구실 결과와 라인 결과는 다르다. 진동, 오염, 외란광, 부품 자세 변동을
-  기록한다.
-- 과검 이미지를 모아 재학습·임계값 조정에 쓴다.
+- 주변광 변화에 과검이 늘 수 있어 차광 케이스와 자동 게인 조정이 권고됐다.
+  ^[raw/papers/maslanka-2025-vision-plc-integration.md]
 
-**통과 기준**: 정해진 기간 동안 목표 성능 유지, 생산 부서 승인.
+**통과 기준**: 정해진 기간 목표 성능 유지, 생산 부서 승인.
 
 ## 8단계. 양산 이관·운영
 
-- 기준 이미지·한도 견본·조명 세팅값을 문서로 남긴다.
-- 금형 수정, 소재 변경, 신규 캐비티 투입 시 재검증 절차를 정한다.
-- 정기 점검: 조명 밝기 저하, 렌즈 오염, 카메라 위치 틀어짐.
-- 과검·미검 사례를 계속 쌓아 모델을 개선한다.
+→ [[concepts/concept-drift|Concept Drift]]
 
-## 단계별 체크리스트
+- 드리프트는 공정, 환경, 센서 변화로 생긴다. 공정 변화는 불량 신호일 수 있고,
+  센서·환경 변화는 장비 교체나 재조정이 필요하다.
+  ^[raw/papers/hinder-2023-concept-drift-survey.md]
+- 정상 판정 이미지의 밝기·이상 점수 분포를 주기적으로 기록한다(라벨 불필요).
+- 금형 수정, 소재 변경, 조명 교체 때 기준 이미지로 재검증한다.
+- 재학습 기준을 이관 전에 정하고, 기준 이미지·한도 견본·세팅값을 문서화한다.
 
-- [ ] 불량 정의서·한도 견본 확정
-- [ ] 목표 미검률·과검률·택트타임 합의
+## 체크리스트
+
+- [ ] 불량 정의서·한도 견본, 목표 미검률·과검률·택트타임 합의
 - [ ] 현행 육안검사 일치성 기준선 측정
-- [ ] 불량 유형별 조명·해상도 테스트 완료
-- [ ] 검사 방식(룰/이상 탐지/지도학습) 결정과 근거 기록
-- [ ] 촬영 조건 고정 후 데이터 수집, 라벨 기준서 작성
-- [ ] PoC: 혼동행렬, 임계값 결정 근거, 추론 시간
-- [ ] 라인 병행 운영 결과와 과검 원인 분석
-- [ ] 운영·재검증 절차 문서화
+- [ ] 불량별 조명 테스트, 해상도·렌즈 계산과 실촬영 확인
+- [ ] 검사 방식 결정과 근거 기록
+- [ ] 촬영 조건 고정 후 수집, 라벨 기준서
+- [ ] PoC: 혼동행렬, 임계값 근거, 처리 시간
+- [ ] PLC 신호·타이밍 예산·배출 조건 설계, 병행 운영
+- [ ] 드리프트 감시 지표와 재검증·재학습 절차
 
-## 관련 지식
-
-- [[concepts/machine-vision-lighting|Machine Vision Lighting]]
-- [[concepts/injection-molding-defects|Injection Molding Defects]]
-- [[concepts/attribute-agreement-analysis|Attribute Agreement Analysis]]
-- [[concepts/surface-defect-detection|Surface Defect Detection]]
-- [[concepts/industrial-anomaly-detection|Industrial Anomaly Detection]]
-
-## 보강할 자료 (TODO)
+## 남은 보강 과제
 
 - 고무 압착 성형 불량 유형 출처
-- 룰 기반 vs 딥러닝 선택 기준 (벤더·중립 출처)
-- 카메라·렌즈 선정 (해상도, 시야, 작동 거리 계산)
-- 엣지 추론과 PLC 연동 사례
-- 양산 후 데이터 드리프트·재학습 운영 사례
+- 엔코더 기반 부품 추적, PROFINET·국내 PLC 연동 사례
+- 비전검사 양산 드리프트 실측 사례
 - 본인 현장 경험 메모 (`raw/` 기록으로 남기면 이 가이드의 근거가 됨)
