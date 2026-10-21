@@ -93,3 +93,7 @@ tmp/
 *~
 .DS_Store
 Thumbs.db
+
+# Local chat app environment
+.venv/
+__pycache__/

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vision Wiki Chat</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Vision Wiki Chat</h1>
+    <p id="wiki-info">위키 불러오는 중…</p>
+  </div>
+  <button id="new-chat" type="button">새 대화</button>
+</header>
+
+<main id="messages" aria-live="polite">
+  <section class="empty" id="empty">
+    <p>위키에 정리된 비전검사 지식을 근거로 답해요.</p>
+    <ul>
+      <li><button type="button" class="example">검정 고무 부품에서 싱크마크 볼 때 조명은 뭘 써야 해?</button></li>
+      <li><button type="button" class="example">시야 50mm에서 0.2mm 이물 찾으려면 카메라 해상도 얼마나 필요해?</button></li>
+      <li><button type="button" class="example">룰 기반이랑 이상 탐지 중 신규 금형 초기엔 뭐가 나아?</button></li>
+    </ul>
+  </section>
+</main>
+
+<form id="composer">
+  <textarea id="input" rows="1" placeholder="질문을 입력하세요 (Enter 전송, Shift+Enter 줄바꿈)" required></textarea>
+  <button id="send" type="submit">전송</button>
+</form>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

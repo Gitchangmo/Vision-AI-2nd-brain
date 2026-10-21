@@ -1,0 +1,135 @@
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #656d76;
+  --border: #d8dee4;
+  --accent: #2f6f5e;
+  --user-bg: #e8f1ee;
+  --code-bg: #f0f2f4;
+  --error: #b42318;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181c;
+    --surface: #1d2126;
+    --text: #e6e8eb;
+    --muted: #9aa3ad;
+    --border: #333a42;
+    --accent: #6fbfa5;
+    --user-bg: #22322d;
+    --code-bg: #262b31;
+    --error: #ff8a80;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.6 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+h1 { margin: 0; font-size: 17px; }
+#wiki-info { margin: 0; color: var(--muted); font-size: 13px; }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+
+.empty { color: var(--muted); }
+.empty ul { list-style: none; padding: 0; display: grid; gap: 8px; }
+.example { text-align: left; width: 100%; }
+
+.msg { margin: 0 0 18px; }
+.msg.user {
+  margin-left: auto;
+  max-width: 85%;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--user-bg);
+  white-space: pre-wrap;
+}
+.msg.assistant { padding: 2px 0; }
+.msg.assistant :where(p, ul, ol, table, pre) { margin: 0 0 10px; }
+.msg.assistant table { border-collapse: collapse; display: block; overflow-x: auto; }
+.msg.assistant :where(th, td) { border: 1px solid var(--border); padding: 4px 8px; }
+.msg.assistant code { background: var(--code-bg); padding: 1px 4px; border-radius: 4px; font-size: 13px; }
+.msg.assistant pre { background: var(--code-bg); padding: 10px; border-radius: 8px; overflow-x: auto; }
+.msg.assistant pre code { padding: 0; }
+
+.wikilink {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.notice { color: var(--muted); font-size: 13px; }
+.error { color: var(--error); }
+.pending::after { content: "▍"; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+#composer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 8px;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 12px 16px 16px;
+  background: var(--bg);
+}
+
+#input {
+  flex: 1;
+  resize: none;
+  max-height: 200px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+#send { background: var(--accent); color: #fff; border-color: var(--accent); }

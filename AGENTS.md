@@ -10,7 +10,9 @@
 - Scope: vision inspection in general (anomaly detection, detection, segmentation,
   lighting, cameras, evaluation, deployment) plus practical guides for introducing
   vision inspection into new processes (injection molding, rubber molding, etc.).
-- The repository root is the wiki root; no database, service, or build system exists.
+- The repository root is the wiki root; there is no database or build system.
+  `app/` holds an optional local FastAPI chat app that answers from the wiki;
+  it reads the Markdown and never writes to it.
 - `SCHEMA.md` is the operational contract. `README.md` covers optional tool setup
   but describes a generic PARA layout that is not the current repository structure.
 - Current curated state: 21 raw Markdown records and 14 canonical pages.
@@ -40,6 +42,7 @@
 ├── comparisons/           # Canonical type: comparison
 ├── queries/               # Canonical type: query (multi-source answers, guides)
 ├── docs/                  # Architecture and diagram deliverables; not evidence
+├── app/                   # Local chat app (FastAPI + static UI); not evidence
 ├── SCHEMA.md              # Authoritative content contract and tag list
 ├── index.md               # Complete active canonical catalog
 └── log.md                 # Append-only wiki operation history
@@ -60,6 +63,7 @@ knowledge-graph state, never canonical evidence.
 | Preserve source evidence | `raw/` | Do not edit captured bodies |
 | Curate reusable knowledge | `entities/`, `concepts/`, `comparisons/`, `queries/` | Folder and frontmatter `type` must agree |
 | Process introduction guide | `queries/vision-inspection-introduction-guide.md` | Hub page for deployment work |
+| Run the wiki chat | `app/README.md` | Uses the Claude Code CLI by default; optional API key in git-ignored `app/.env` |
 
 ## CONTENT CONTRACT
 
