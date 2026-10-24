@@ -16,17 +16,19 @@ import os
 import shutil
 import subprocess
 import tempfile
+import threading
 from collections.abc import AsyncIterator, Iterator
 from pathlib import Path
 from typing import Literal
 
 import anthropic
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from app.conversations import ConversationStore
 from app.wiki import WikiContext
 
 APP_DIR = Path(__file__).resolve().parent
@@ -40,20 +42,27 @@ API_MODEL = os.getenv("WIKI_CHAT_MODEL", "claude-opus-5-5")
 CLI_MODEL = os.getenv("WIKI_CHAT_MODEL", "")
 MAX_TOKENS = 64000
 
+# Images arrive as base64 content blocks. They reach disk only inside saved
+# conversations, which stay in the git-ignored app/data directory.
+IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+MAX_IMAGE_BASE64_CHARS = 6_500_000  # about 5 MB decoded, the API's per-image limit
+MAX_IMAGES_PER_MESSAGE = 5
+
 # The CLI runs in an empty work directory so it picks up no project files or
 # CLAUDE.md; the wiki reaches it only through the system prompt file.
 CLI_WORKDIR = Path(tempfile.gettempdir()) / "vision-wiki-chat"
 
 client = anthropic.AsyncAnthropic()
 wiki = WikiContext(REPO_ROOT)
+conversations = ConversationStore(APP_DIR / "data" / "conversations")
 app = FastAPI(title="Vision Wiki Chat")
 app.mount("/static", StaticFiles(directory=APP_DIR / "static"), name="static")
 
 
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
-    # User turns are plain text. Assistant turns carry the content this server
-    # returned earlier, sent back unchanged.
+    # User turns are text or a list of text/image blocks. Assistant turns carry
+    # the content this server returned earlier, sent back unchanged.
     content: str | list[dict]
 
 
@@ -61,8 +70,38 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1)
 
 
+class SavedConversation(BaseModel):
+    title: str = Field(max_length=200)
+    messages: list[ChatMessage] = Field(min_length=1)
+    # Display-only notes keyed by message index, such as model and token counts.
+    meta: dict[str, str] = {}
+
+
 def sse(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def check_user_content(messages: list[dict]) -> str | None:
+    """Returns an error message when a user turn holds an unusable block."""
+    for message in messages:
+        if message["role"] != "user" or isinstance(message["content"], str):
+            continue
+        images = 0
+        for block in message["content"]:
+            kind = block.get("type")
+            if kind == "text" and isinstance(block.get("text"), str):
+                continue
+            if kind != "image":
+                return "지원하지 않는 첨부 형식입니다."
+            source = block.get("source") or {}
+            if source.get("type") != "base64" or source.get("media_type") not in IMAGE_TYPES:
+                return "이미지는 JPEG, PNG, GIF, WebP만 첨부할 수 있습니다."
+            if len(source.get("data", "")) > MAX_IMAGE_BASE64_CHARS:
+                return "이미지 하나가 너무 큽니다 (최대 약 5MB)."
+            images += 1
+        if images > MAX_IMAGES_PER_MESSAGE:
+            return f"한 번에 이미지는 {MAX_IMAGES_PER_MESSAGE}장까지 첨부할 수 있습니다."
+    return None
 
 
 @app.get("/")
@@ -76,11 +115,46 @@ async def wiki_info() -> dict:
     return {**wiki.summary(), "backend": BACKEND, "model": model, "effort": EFFORT}
 
 
+@app.get("/api/conversations")
+def list_conversations() -> list[dict]:
+    return conversations.list()
+
+
+@app.get("/api/conversations/{conversation_id}")
+def get_conversation(conversation_id: str) -> dict:
+    data = conversations.get(conversation_id)
+    if data is None:
+        raise HTTPException(404, "대화를 찾을 수 없습니다.")
+    return data
+
+
+@app.put("/api/conversations/{conversation_id}")
+def save_conversation(conversation_id: str, body: SavedConversation) -> dict:
+    messages = [m.model_dump() for m in body.messages]
+    problem = check_user_content(messages)
+    if problem:
+        raise HTTPException(400, problem)
+    saved = conversations.save(conversation_id, body.title, messages, body.meta)
+    if saved is None:
+        raise HTTPException(400, "잘못된 대화 ID입니다.")
+    return saved
+
+
+@app.delete("/api/conversations/{conversation_id}")
+def delete_conversation(conversation_id: str) -> dict:
+    if not conversations.delete(conversation_id):
+        raise HTTPException(404, "대화를 찾을 수 없습니다.")
+    return {"deleted": conversation_id}
+
+
 @app.post("/api/chat")
 async def chat(request: ChatRequest) -> StreamingResponse:
     messages = [m.model_dump() for m in request.messages]
+    problem = check_user_content(messages)
     if messages[-1]["role"] != "user":
-        stream = iter([sse({"type": "error", "message": "마지막 메시지는 질문이어야 합니다."})])
+        problem = "마지막 메시지는 질문이어야 합니다."
+    if problem:
+        stream = iter([sse({"type": "error", "message": problem})])
     elif BACKEND == "api":
         stream = stream_api(messages)
     else:
@@ -158,17 +232,45 @@ def as_text(content: str | list[dict]) -> str:
     return "".join(b.get("text", "") for b in content if b.get("type") == "text")
 
 
-def cli_prompt(messages: list[dict]) -> str:
-    """Flattens the conversation into one prompt; each CLI run is stateless."""
+def cli_user_message(messages: list[dict]) -> dict:
+    """Flattens the conversation into one user message; each CLI run is stateless.
+
+    Images from earlier user turns stay in place so follow-up questions can
+    refer back to them.
+    """
+    blocks: list[dict] = []
+
+    def add_text(text: str) -> None:
+        if blocks and blocks[-1]["type"] == "text":
+            blocks[-1]["text"] += text
+        else:
+            blocks.append({"type": "text", "text": text})
+
+    def add_user_content(content: str | list[dict]) -> None:
+        if isinstance(content, str):
+            add_text(content)
+            return
+        for block in content:
+            if block["type"] == "image":
+                blocks.append(block)
+            else:
+                add_text(block["text"])
+
     *earlier, last = messages
-    parts = []
     if earlier:
-        turns = "\n".join(
-            f'<turn role="{m["role"]}">\n{as_text(m["content"])}\n</turn>' for m in earlier
-        )
-        parts.append(f"<conversation_so_far>\n{turns}\n</conversation_so_far>\n")
-    parts.append(f"<question>\n{as_text(last['content'])}\n</question>")
-    return "\n".join(parts)
+        add_text("<conversation_so_far>\n")
+        for m in earlier:
+            add_text(f'<turn role="{m["role"]}">\n')
+            if m["role"] == "user":
+                add_user_content(m["content"])
+            else:
+                add_text(as_text(m["content"]))
+            add_text("\n</turn>\n")
+        add_text("</conversation_so_far>\n\n")
+    add_text("<question>\n")
+    add_user_content(last["content"])
+    add_text("\n</question>")
+    return {"type": "user", "message": {"role": "user", "content": blocks}}
 
 
 def stream_cli(messages: list[dict]) -> Iterator[str]:
@@ -181,6 +283,7 @@ def stream_cli(messages: list[dict]) -> Iterator[str]:
 
     command = [
         executable, "-p",
+        "--input-format", "stream-json",
         "--output-format", "stream-json", "--verbose", "--include-partial-messages",
         "--tools", "",
         "--system-prompt-file", str(wiki.system_prompt_file(CLI_WORKDIR)),
@@ -199,11 +302,22 @@ def stream_cli(messages: list[dict]) -> Iterator[str]:
         stdout=subprocess.PIPE,
         stderr=errors,
     )
+    # Images can make the input several MB, so feed stdin from a thread while
+    # this thread reads stdout.
+    payload = (json.dumps(cli_user_message(messages), ensure_ascii=False) + "\n").encode("utf-8")
+
+    def feed_stdin() -> None:
+        try:
+            process.stdin.write(payload)
+        except OSError:
+            pass  # the CLI exited early; its error is reported from stderr
+        finally:
+            process.stdin.close()
+
+    threading.Thread(target=feed_stdin, daemon=True).start()
     text = ""
     result: dict | None = None
     try:
-        process.stdin.write(cli_prompt(messages).encode("utf-8"))
-        process.stdin.close()
         for line in process.stdout:
             try:
                 event = json.loads(line)

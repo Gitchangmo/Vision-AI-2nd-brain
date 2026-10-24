@@ -97,3 +97,4 @@ Thumbs.db
 # Local chat app environment
 .venv/
 __pycache__/
+app/data/
