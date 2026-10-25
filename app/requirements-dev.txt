@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest>=8
+httpx>=0.27
+# Only for tests/e2e/ui_check.py; it drives the locally installed Chrome.
+playwright>=1.40

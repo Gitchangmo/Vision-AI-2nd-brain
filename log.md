@@ -249,3 +249,18 @@
   - `index.md`
   - `log.md`
 - Canonical state: 14 pages, 모두 `status: draft`.
+
+## [2026-10-25] update | 현장 메모 규칙과 위키 검사기 추가
+
+- Updated:
+  - `SCHEMA.md` (Field Notes 섹션: `raw/field-notes/` 익명화 규칙과 frontmatter 형식,
+    Repository Structure에 `raw/field-notes/`, `templates/` 추가)
+  - `AGENTS.md` (새 폴더, 검사 명령, 익명화 금지 사항)
+  - `log.md`
+- Created:
+  - `templates/field-note.md`
+  - `raw/field-notes/.gitkeep`
+  - `scripts/wikilint.py` (`python -m scripts.wikilint`, 오류 시 종료 코드 1)
+- Notes: 첫 실행에서 `raw/papers/roth-2022-patchcore.md`의 작업 폴더 사본만 CRLF였다.
+  git에 저장된 내용과 해시가 같은 LF로 맞췄고 저장소 내용 변경은 없다.
+  예전 `## 2026-08-20` 기록 제목은 형식이 맞지 않지만 append-only 원칙에 따라 경고로만 남긴다.

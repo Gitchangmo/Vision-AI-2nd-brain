@@ -90,6 +90,19 @@ class WikiContext:
             },
         ]
 
+    def wiki_text(self) -> str:
+        self._refresh()
+        return f"<wiki>\n{self._wiki_text}\n</wiki>"
+
+    def raw_paths(self) -> list[str]:
+        self._refresh()
+        return [f.path for f in self._files if f.path.startswith("raw/")]
+
+    def document(self, path: str) -> str | None:
+        """Returns one loaded wiki file, or None for anything outside the wiki."""
+        self._refresh()
+        return next((f.text for f in self._files if f.path == path), None)
+
     def system_prompt_file(self, directory: Path) -> Path:
         """Writes the full system prompt to a file for the Claude Code CLI.
 

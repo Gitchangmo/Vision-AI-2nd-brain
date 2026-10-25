@@ -5,6 +5,9 @@ Two backends answer the questions:
   subscription and needs no API key. Default when no API key is set.
 - "api": calls the Claude API with ANTHROPIC_API_KEY (billed per token).
 
+Besides chat, the server drafts and writes wiki content (field notes and filed
+query pages); every write passes the privacy gate and scripts.wikilint first.
+
 Run from the repository root:
     app/.venv/Scripts/python -m uvicorn app.server:app --reload
 """
@@ -13,27 +16,35 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 import threading
 from collections.abc import AsyncIterator, Iterator
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
 import anthropic
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from app import llm, prompts
 from app.conversations import ConversationStore
+from app.privacy import SensitiveTerms, find_sensitive
 from app.wiki import WikiContext
+from app.wikiwrite import PROCESSES, WikiWriteError, check_query_page, write_field_note, write_query_page
+from scripts.wikilint import load_state
 
 APP_DIR = Path(__file__).resolve().parent
-REPO_ROOT = APP_DIR.parent
 load_dotenv(APP_DIR / ".env")
+# Overridable so tests can run against a throwaway copy of the wiki.
+REPO_ROOT = Path(os.getenv("WIKI_ROOT") or APP_DIR.parent)
+DATA_DIR = Path(os.getenv("WIKI_CHAT_DATA") or APP_DIR / "data")
 
 BACKEND = os.getenv("WIKI_CHAT_BACKEND") or ("api" if os.getenv("ANTHROPIC_API_KEY") else "cli")
 EFFORT = os.getenv("WIKI_CHAT_EFFORT", "medium")
@@ -47,6 +58,7 @@ MAX_TOKENS = 64000
 IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 MAX_IMAGE_BASE64_CHARS = 6_500_000  # about 5 MB decoded, the API's per-image limit
 MAX_IMAGES_PER_MESSAGE = 5
+REQUEST_ID = re.compile(r"^[0-9a-f]{32}$")
 
 # The CLI runs in an empty work directory so it picks up no project files or
 # CLAUDE.md; the wiki reaches it only through the system prompt file.
@@ -54,7 +66,14 @@ CLI_WORKDIR = Path(tempfile.gettempdir()) / "vision-wiki-chat"
 
 client = anthropic.AsyncAnthropic()
 wiki = WikiContext(REPO_ROOT)
-conversations = ConversationStore(APP_DIR / "data" / "conversations")
+conversations = ConversationStore(DATA_DIR / "conversations")
+sensitive_terms = SensitiveTerms(DATA_DIR / "sensitive-terms.txt")
+# Field notes and query pages both append to log.md; one writer at a time.
+wiki_write_lock = threading.Lock()
+# CLI processes of answers in progress, so the stop button can end them.
+running: dict[str, subprocess.Popen] = {}
+running_lock = threading.Lock()
+
 app = FastAPI(title="Vision Wiki Chat")
 app.mount("/static", StaticFiles(directory=APP_DIR / "static"), name="static")
 
@@ -68,6 +87,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1)
+    request_id: str | None = None
 
 
 class SavedConversation(BaseModel):
@@ -77,8 +97,42 @@ class SavedConversation(BaseModel):
     meta: dict[str, str] = {}
 
 
+class TermsBody(BaseModel):
+    terms: list[str]
+
+
+class FieldNoteDraftRequest(BaseModel):
+    title: str = ""
+    process: str
+    status: str
+    date: str
+    sections: dict[str, str]
+
+
+class FieldNoteSave(BaseModel):
+    title: str
+    process: str
+    status: str
+    date: str
+    body: str
+
+
+class WikiDraftRequest(BaseModel):
+    messages: list[ChatMessage] = Field(min_length=2)
+
+
+class WikiPage(BaseModel):
+    path: str
+    text: str
+    summary: str
+
+
 def sse(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def today() -> str:
+    return date.today().isoformat()
 
 
 def check_user_content(messages: list[dict]) -> str | None:
@@ -104,6 +158,23 @@ def check_user_content(messages: list[dict]) -> str | None:
     return None
 
 
+def findings_json(text: str) -> list[dict]:
+    return [{"kind": f.kind, "match": f.match} for f in find_sensitive(text, sensitive_terms.load())]
+
+
+def generate(system: str, prompt: str, schema: dict) -> dict:
+    try:
+        return llm.complete_json(
+            backend=BACKEND, system=system, prompt=prompt, schema=schema, workdir=CLI_WORKDIR,
+            effort=EFFORT, api_model=API_MODEL, cli_model=CLI_MODEL,
+        )
+    except llm.GenerationError as e:
+        raise HTTPException(502, str(e)) from e
+
+
+# --- pages and wiki info ---------------------------------------------------------
+
+
 @app.get("/")
 async def index() -> FileResponse:
     return FileResponse(APP_DIR / "static" / "index.html")
@@ -113,6 +184,19 @@ async def index() -> FileResponse:
 async def wiki_info() -> dict:
     model = API_MODEL if BACKEND == "api" else (CLI_MODEL or "Claude Code 기본 모델")
     return {**wiki.summary(), "backend": BACKEND, "model": model, "effort": EFFORT}
+
+
+@app.get("/api/doc")
+def get_doc(path: str) -> dict:
+    # Only files the wiki loader knows (index, canonical pages, raw records)
+    # can be read; any other path, including traversal attempts, is not found.
+    text = wiki.document(path)
+    if text is None:
+        raise HTTPException(404, "위키 문서를 찾을 수 없습니다.")
+    return {"path": path, "text": text}
+
+
+# --- saved conversations ---------------------------------------------------------
 
 
 @app.get("/api/conversations")
@@ -147,19 +231,127 @@ def delete_conversation(conversation_id: str) -> dict:
     return {"deleted": conversation_id}
 
 
+# --- sensitive terms -------------------------------------------------------------
+
+
+@app.get("/api/sensitive-terms")
+def get_terms() -> dict:
+    return {"terms": sensitive_terms.load()}
+
+
+@app.put("/api/sensitive-terms")
+def put_terms(body: TermsBody) -> dict:
+    return {"terms": sensitive_terms.save(body.terms)}
+
+
+# --- field notes -----------------------------------------------------------------
+
+
+@app.post("/api/field-notes/draft")
+def draft_field_note(body: FieldNoteDraftRequest) -> dict:
+    if body.process not in PROCESSES:
+        raise HTTPException(400, "공정 분류가 잘못됐습니다.")
+    filled = {k: v.strip() for k, v in body.sections.items() if v.strip()}
+    if not filled:
+        raise HTTPException(400, "내용을 한 칸 이상 입력하세요.")
+    prompt = prompts.field_note_prompt(body.title, PROCESSES[body.process], filled, sensitive_terms.load())
+    draft = generate(prompts.FIELD_NOTE_SYSTEM, prompt, prompts.FIELD_NOTE_SCHEMA)
+    draft["findings"] = findings_json(f"{draft['title']}\n{draft['body']}")
+    return draft
+
+
+@app.post("/api/field-notes")
+def save_field_note(body: FieldNoteSave):
+    findings = findings_json(f"{body.title}\n{body.body}")
+    if findings:
+        return JSONResponse({"detail": "민감 정보가 남아 있어 저장하지 않았습니다.", "findings": findings}, 422)
+    try:
+        with wiki_write_lock:
+            path = write_field_note(
+                REPO_ROOT, title=body.title, process=body.process, status=body.status,
+                date=body.date, body=body.body, today=today(),
+            )
+    except WikiWriteError as e:
+        return JSONResponse({"detail": "저장하지 않았습니다.", "issues": e.issues}, 422)
+    return {"path": path}
+
+
+# --- chat answer to wiki page ------------------------------------------------------
+
+
+def page_report(page: WikiPage) -> dict:
+    text = page.text if page.text.endswith("\n") else page.text + "\n"
+    issues = check_query_page(REPO_ROOT, page.path, text)
+    return {
+        "issues": [{"level": i.level, "message": i.message} for i in issues],
+        "findings": findings_json(f"{page.summary}\n{text}"),
+    }
+
+
+@app.post("/api/wiki-drafts")
+def draft_wiki_page(body: WikiDraftRequest) -> dict:
+    messages = [m.model_dump() for m in body.messages]
+    if messages[-1]["role"] != "assistant":
+        raise HTTPException(400, "답변까지 포함한 대화가 필요합니다.")
+    state = load_state(REPO_ROOT)
+    schema = prompts.wiki_draft_schema(sorted(state.tags), wiki.raw_paths())
+    system = prompts.WIKI_DRAFT_INSTRUCTIONS + "\n" + wiki.wiki_text()
+    draft = generate(system, prompts.wiki_draft_prompt(messages, sensitive_terms.load()), schema)
+    page = WikiPage(
+        path=f"queries/{draft['slug']}.md",
+        text=prompts.query_page_text(draft, today()),
+        summary=draft["summary"],
+    )
+    return {**page.model_dump(), "warnings": draft["warnings"], **page_report(page)}
+
+
+@app.post("/api/wiki-drafts/check")
+def check_wiki_page(page: WikiPage) -> dict:
+    return page_report(page)
+
+
+@app.post("/api/wiki-drafts/save")
+def save_wiki_page(page: WikiPage):
+    findings = findings_json(f"{page.summary}\n{page.text}")
+    if findings:
+        return JSONResponse({"detail": "민감 정보가 남아 있어 저장하지 않았습니다.", "findings": findings}, 422)
+    try:
+        with wiki_write_lock:
+            path = write_query_page(REPO_ROOT, path=page.path, text=page.text, summary=page.summary, today=today())
+    except WikiWriteError as e:
+        return JSONResponse({"detail": "위키 검사를 통과하지 못했습니다.", "issues": e.issues}, 422)
+    return {"path": path}
+
+
+# --- chat ------------------------------------------------------------------------
+
+
 @app.post("/api/chat")
 async def chat(request: ChatRequest) -> StreamingResponse:
     messages = [m.model_dump() for m in request.messages]
     problem = check_user_content(messages)
     if messages[-1]["role"] != "user":
         problem = "마지막 메시지는 질문이어야 합니다."
+    if request.request_id is not None and not REQUEST_ID.fullmatch(request.request_id):
+        problem = "잘못된 요청 ID입니다."
     if problem:
         stream = iter([sse({"type": "error", "message": problem})])
     elif BACKEND == "api":
         stream = stream_api(messages)
     else:
-        stream = stream_cli(messages)
+        stream = stream_cli(messages, request.request_id)
     return StreamingResponse(stream, media_type="text/event-stream")
+
+
+@app.post("/api/chat/{request_id}/cancel")
+def cancel_chat(request_id: str) -> dict:
+    # The API backend stops when the browser drops the connection; only CLI
+    # runs need an explicit kill.
+    with running_lock:
+        process = running.pop(request_id, None)
+    if process is not None and process.poll() is None:
+        process.kill()
+    return {"cancelled": process is not None}
 
 
 # --- API backend -----------------------------------------------------------
@@ -226,54 +418,7 @@ async def stream_api(messages: list[dict]) -> AsyncIterator[str]:
 # --- CLI backend -----------------------------------------------------------
 
 
-def as_text(content: str | list[dict]) -> str:
-    if isinstance(content, str):
-        return content
-    return "".join(b.get("text", "") for b in content if b.get("type") == "text")
-
-
-def cli_user_message(messages: list[dict]) -> dict:
-    """Flattens the conversation into one user message; each CLI run is stateless.
-
-    Images from earlier user turns stay in place so follow-up questions can
-    refer back to them.
-    """
-    blocks: list[dict] = []
-
-    def add_text(text: str) -> None:
-        if blocks and blocks[-1]["type"] == "text":
-            blocks[-1]["text"] += text
-        else:
-            blocks.append({"type": "text", "text": text})
-
-    def add_user_content(content: str | list[dict]) -> None:
-        if isinstance(content, str):
-            add_text(content)
-            return
-        for block in content:
-            if block["type"] == "image":
-                blocks.append(block)
-            else:
-                add_text(block["text"])
-
-    *earlier, last = messages
-    if earlier:
-        add_text("<conversation_so_far>\n")
-        for m in earlier:
-            add_text(f'<turn role="{m["role"]}">\n')
-            if m["role"] == "user":
-                add_user_content(m["content"])
-            else:
-                add_text(as_text(m["content"]))
-            add_text("\n</turn>\n")
-        add_text("</conversation_so_far>\n\n")
-    add_text("<question>\n")
-    add_user_content(last["content"])
-    add_text("\n</question>")
-    return {"type": "user", "message": {"role": "user", "content": blocks}}
-
-
-def stream_cli(messages: list[dict]) -> Iterator[str]:
+def stream_cli(messages: list[dict], request_id: str | None) -> Iterator[str]:
     # A sync generator: StreamingResponse runs it in a worker thread, which
     # avoids asyncio subprocess limits on Windows event loops.
     executable = shutil.which("claude")
@@ -302,9 +447,13 @@ def stream_cli(messages: list[dict]) -> Iterator[str]:
         stdout=subprocess.PIPE,
         stderr=errors,
     )
+    if request_id:
+        with running_lock:
+            running[request_id] = process
+
     # Images can make the input several MB, so feed stdin from a thread while
     # this thread reads stdout.
-    payload = (json.dumps(cli_user_message(messages), ensure_ascii=False) + "\n").encode("utf-8")
+    payload = (json.dumps(prompts.cli_user_message(messages), ensure_ascii=False) + "\n").encode("utf-8")
 
     def feed_stdin() -> None:
         try:
@@ -335,6 +484,9 @@ def stream_cli(messages: list[dict]) -> Iterator[str]:
     finally:
         if process.poll() is None:
             process.kill()
+        if request_id:
+            with running_lock:
+                running.pop(request_id, None)
 
     errors.seek(0)
     stderr_text = errors.read().decode("utf-8", "replace").strip()

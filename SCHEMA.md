@@ -16,6 +16,8 @@
 
 - `inbox/`: 아직 분류하지 않은 메모·링크·아이디어
 - `raw/`: 논문, 공식 문서, 실험 로그 등 원본 자료
+- `raw/field-notes/`: 본인의 현장 경험 메모 (익명화 필수, 아래 Field Notes 참고)
+- `templates/`: 새 문서를 만들 때 복사하는 양식
 - `entities/`: 사람, 조직, 도구, 데이터셋, 모델 같은 개체
 - `concepts/`: 기술 개념과 방법론
 - `comparisons/`: 모델·도구·방법 비교
@@ -48,6 +50,37 @@ sources: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
+
+## Field Notes
+
+`raw/field-notes/`는 본인이 현장에서 겪은 PoC, 파일럿, 양산 경험을 남기는
+원본 기록이다. 이 저장소는 공개되므로 익명화를 엄격하게 지킨다.
+
+반드시 일반화하거나 지울 것:
+1. 고객사, 협력사, 자사 이름과 제품명, 모델·품번, 도면·금형 번호
+2. 사람 이름, 사번, 연락처, 공장 위치, 라인 이름
+3. 수율, 불량률, 생산량, 단가, 투자 금액 같은 사업 수치 (범위나 상대 표현으로)
+4. 로고, 각인, 명판이 보이는 사진 (사진은 기본적으로 넣지 않는다)
+
+남겨도 되는 것: 일반화한 공정·부품 분류(예: 자동차 내장 사출 부품), 불량 유형,
+조명·카메라·렌즈 구성, 알고리즘과 설정값, 시행착오와 교훈.
+
+frontmatter 형식:
+
+---
+title: "<일반화한 제목>"
+type: field-note
+date: YYYY-MM
+process: injection-molding | rubber-molding | extrusion | press | assembly | other
+status: poc | pilot | production | abandoned
+confidentiality: anonymized
+captured: YYYY-MM-DD
+---
+
+본문은 상황, 시도한 것, 결과, 실패·문제, 교훈 순서로 쓴다. 양식은
+`templates/field-note.md`에 있다. 저장한 뒤에는 다른 raw 기록처럼 수정하지 않고,
+새로 알게 된 사실은 새 메모로 남긴다. 정식 문서는 `^[raw/field-notes/...]`로
+현장 메모를 인용할 수 있다.
 
 ## Initial Tags
 

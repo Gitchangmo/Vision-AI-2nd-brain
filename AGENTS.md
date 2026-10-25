@@ -1,6 +1,6 @@
 # PROJECT KNOWLEDGE BASE
 
-**Updated:** 2026-10-20
+**Updated:** 2026-10-25
 **Branch:** main
 
 ## OVERVIEW
@@ -11,11 +11,12 @@
   lighting, cameras, evaluation, deployment) plus practical guides for introducing
   vision inspection into new processes (injection molding, rubber molding, etc.).
 - The repository root is the wiki root; there is no database or build system.
-  `app/` holds an optional local FastAPI chat app that answers from the wiki;
-  it reads the Markdown and never writes to it.
+  `app/` holds an optional local FastAPI chat app that answers from the wiki.
+  It writes to the wiki only through two user-confirmed flows (field notes and
+  filed query pages), each gated by `scripts.wikilint` and a sensitive-term check.
 - `SCHEMA.md` is the operational contract. `README.md` covers optional tool setup
   but describes a generic PARA layout that is not the current repository structure.
-- Current curated state: 21 raw Markdown records and 14 canonical pages.
+- Current curated state: 21 raw Markdown records and 14 canonical pages; no field notes yet.
 
 ## START HERE
 
@@ -31,6 +32,7 @@
 ├── inbox/                 # Temporary intake; neither evidence nor canonical
 ├── raw/
 │   ├── papers/            # Paper records (metadata, abstract, located excerpts)
+│   ├── field-notes/       # Own anonymized field experience (SCHEMA.md Field Notes)
 │   ├── articles/          # Captured article Markdown
 │   ├── web/               # Captured web pages and vendor/tool documentation
 │   ├── notebooklm/        # NotebookLM-imported source records
@@ -43,6 +45,9 @@
 ├── queries/               # Canonical type: query (multi-source answers, guides)
 ├── docs/                  # Architecture and diagram deliverables; not evidence
 ├── app/                   # Local chat app (FastAPI + static UI); not evidence
+├── scripts/               # wikilint.py: contract checker (python -m scripts.wikilint)
+├── templates/             # Copyable page templates (field-note.md)
+├── tests/                 # pytest for wikilint and the app; e2e/ui_check.py browser check
 ├── SCHEMA.md              # Authoritative content contract and tag list
 ├── index.md               # Complete active canonical catalog
 └── log.md                 # Append-only wiki operation history
@@ -64,6 +69,7 @@ knowledge-graph state, never canonical evidence.
 | Curate reusable knowledge | `entities/`, `concepts/`, `comparisons/`, `queries/` | Folder and frontmatter `type` must agree |
 | Process introduction guide | `queries/vision-inspection-introduction-guide.md` | Hub page for deployment work |
 | Run the wiki chat | `app/README.md` | Uses the Claude Code CLI by default; optional API key in git-ignored `app/.env` |
+| Record own field experience | `templates/field-note.md`, app "현장 메모" tab | Strict anonymization; the repo is public |
 
 ## CONTENT CONTRACT
 
@@ -111,13 +117,23 @@ Never rewrite earlier log entries; correct them with a new `repair` entry.
 
 ## VALIDATION
 
-No build, test, lint, or CI is configured. Validate the contract directly:
+Run the checker from the repository root; it exits 1 on any error:
+
+```bash
+python -m scripts.wikilint
+app/.venv/Scripts/python -m pytest tests          # app and checker tests
+```
+
+The checker covers:
 
 - UTF-8, LF, no BOM, final newline, and leading frontmatter.
 - Required fields, allowed `type`/`status` values, registered tags, type-directory fit.
 - Existing source paths and valid claim-level provenance markers.
 - No broken canonical wikilinks.
 - Filesystem canonical count equals `index.md`; each active page appears once.
+- Raw records have frontmatter; field notes carry `date`, `process`, `confidentiality`.
+
+It does not verify quotes against their sources; recheck those when ingesting.
 
 ## ANTI-PATTERNS
 
@@ -126,5 +142,7 @@ No build, test, lint, or CI is configured. Validate the contract directly:
   `docs/` as evidence.
 - Do not create passing-mention, isolated, or duplicate canonical pages.
 - Do not rewrite prior `log.md` entries or skip index/log synchronization.
+- Do not write customer, product, people, site, or business-figure details into
+  the wiki; generalize them (SCHEMA.md Field Notes).
 - Do not commit credentials, personal or confidential company data, Obsidian
   workspace state, `.ua/`, `output/`, or QA artifacts.
